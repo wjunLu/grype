@@ -2,6 +2,7 @@ package distro
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	hashiVer "github.com/hashicorp/go-version"
@@ -115,6 +116,10 @@ func NewFromRelease(release linux.Release) (*Distro, error) {
 	if selectedVersion == "" {
 		selectedVersion = release.VersionID
 	}
+	re := regexp.MustCompile(`\(|\)`)
+	selectedVersion = strings.ReplaceAll(re.ReplaceAllString(strings.Trim(release.Version, `"'`), ""), " ", "-")
+	fmt.Printf("|+++++[DEBUG] Release.Version: %q++++++|\n", release.Version)
+	fmt.Printf("|+++++[DEBUG] Using selected version: %q++++++|\n", selectedVersion)
 
 	return New(t, selectedVersion, release.VersionCodename, release.IDLike...), nil
 }
